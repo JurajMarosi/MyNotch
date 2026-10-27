@@ -1,25 +1,32 @@
-// swift-tools-version: 6.4
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
+// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
     name: "MyNotch",
+    platforms: [
+        .macOS(.v14) // Target macOS Sonoma (M3 MacBook Air support)
+    ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
             name: "MyNotch",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
             ],
+            linkerSettings: [
+                .unsafeFlags([
+                    "-Xlinker", "-sectcreate",
+                    "-Xlinker", "__TEXT",
+                    "-Xlinker", "__info_plist",
+                    "-Xlinker", "Info.plist" // Path relative to Package.swift
+                ])
+            ]
         ),
         .testTarget(
             name: "MyNotchTests",
             dependencies: ["MyNotch"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
+            ]
         ),
     ]
 )
